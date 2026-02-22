@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>Perfil Reclutamiento</title>
+  <link rel="stylesheet" href="style.css"> <!-- Vincula tu archivo de estilos -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+    header {
+      background-color: #8B0000;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    main {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #perfil {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    #foto-jugador img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    #info-jugador {
+      flex: 2;
+    }
+    h2 {
+      color: #8B0000;
+    }
+    h3 {
+      color: #000000;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+    footer {
+      text-align: center;
+      padding: 10px 0;
+      margin-top: 20px;
+      background-color: #8B0000;
+      color: white;
+    }
+    footer a {
+      color: white;
+      margin: 0 10px;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    #highlight-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .highlight-btn {
+      background-color: #8B0000; /* Fondo rojo oscuro */
+      color: white; /* Texto blanco */
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .highlight-btn:hover {
+      background-color: #a00000; /* Rojo más claro */
+      transform: translateY(-2px); /* Efecto de elevación */
+    }
+    .highlight-btn:active {
+      transform: translateY(1px); /* Efecto de presionado */
+    }
+
+    /* ===== CRM CHECKLIST ===== */
+    #crm-proceso {
+      margin-top: 30px;
+      padding: 20px;
+      border: 2px solid #8B0000;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    #crm-proceso h3 {
+      color: #8B0000;
+      margin-bottom: 15px;
+    }
+
+    /* Grid de checklist */
+    #crm-checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    /* Cada item */
+    .crm-check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Forzar tamaño normal del checkbox */
+    .crm-check-item input[type="checkbox"] {
+      width: auto !important;
+      height: auto !important;
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    /* Evitar estilos raros heredados */
+    .crm-check-item input {
+      display: inline-block !important;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Base de datos Reclutamiento</h1>
+    <nav style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; gap: 20px;">
+        <a href="index.html"  style="color: white; text-decoration: none;">Inicio</a>
+        <a href="bigboard.html"style="color: white; text-decoration: none;">Big Board</a>
+        <a href="roster.html"style="color: white; text-decoration: none;">Roster</a>
+        <a href="procesos.html"style="color: white; text-decoration: none;">Procesos</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section id="perfil">
+      <!-- Foto del jugador -->
+      <div id="foto-jugador" style="flex: 1;">
+        <img id="Foto" src="imagenes/default.jpg" alt="Foto del jugador HOLA" />
+      </div>
+
+      <!-- Información del jugador -->
+      <div id="info-jugador" style="flex: 2;">
+        <h2 id="nombre">Nombre del jugador</h2>
+        <table>
+          <tr>
+            <td><strong>Posición Principal:</strong></td>
+            <td id="posicionOfensiva">N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Altura:</strong></td>
+            <td id="altura">N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Peso:</strong></td>
+            <td id="peso">N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Clase (Año de graduación):</strong></td>
+            <td id="clase">N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Escuela:</strong></td>
+            <td id="escuela">N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Promedio académico:</strong></td>
+            <td id="promedio">N/A</td>
+          </tr>
+          
+          <tr>
+            <td><strong>Fecha de Nacimiento:</strong></td>
+            <td id="Fecha de Nacimiento">N/A</td>
+          </tr>
+          
+          
+          <tr>
+            <td><strong>Club/Equipo:</strong></td>
+            <td id="club">N/A</td>
+          </tr>
+          <tr>
+            <td><strong>Estado:</strong></td>
+            <td id="estado">N/A</td>
+          </tr>
+        </table>
+        <h3>Estadísticas y logros</h3>
+       
+        <p><strong>Logros:</strong> <span id="logros">N/A</span></p>
+        <p><strong>Combine:</strong> <span id="lesiones">N/A</span></p>
+      </div>
+    </section>
+
+    <!-- Botones de Highlights -->
+    <div id="highlight-buttons">
+        <button id="highlight1" class="highlight-btn">Highlights 1</button>
+        <button id="highlight2" class="highlight-btn">Highlights 2</button>
+        <button id="highlight3" class="highlight-btn">Highlights 3</button>
+    </div>
+
+    <div id="calificacion">
+      <h3>Califica a este jugador</h3>
+      <div id="estrellas">
+        <span class="estrella" data-value="1">★</span>
+        <span class="estrella" data-value="2">★</span>
+        <span class="estrella" data-value="3">★</span>
+        <span class="estrella" data-value="4">★</span>
+        <span class="estrella" data-value="5">★</span>
+      </div>
+      <div id="favoritos-container" style="margin-top: 10px; text-align: center;">
+        <button
+          id="favoritos-btn"
+          class="highlight-btn"
+          onclick="toggleFavoritoGlobal('NombreDelJugador', 'ApellidoDelJugador')"
+        >
+          Agregar a Favoritos
+        </button>
+      </div>
+    
+    
+
+</div>
+      
+    
+    
+    
+    
+    <!-- Nueva sección de Contacto -->
+    <section id="contacto" style="display: flex; flex-direction: column;">
+      <h3>Contacto</h3>
+      <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+          <div style="flex: 1;">
+              <p><strong>Teléfono:</strong> <span id="telefono">N/A</span></p>
+              <p><strong>Correo Electrónico:</strong> <span id="email">N/A</span></p>
+              <p><strong>X (Twitter):</strong> <span id="nombrePadre">N/A</span></p>
+              <p><strong>Instagram:</strong> <span id="telefonoPadre">N/A</span></p>
+          </div>
+          
+      </div>
+      <!-- <section id="estadisticas">
+        <h3>RAS con jugador modelo</h3>
+        <table id="tabla-estadisticas" class="athletic-table"></table>
+      </section>
+      <section id="estadisticas-promedio">
+        <h3>RAS con la Clase</h3>
+        <table id="tabla-ras-promedio" class="athletic-table">
+           Esta tabla será llenada dinámicamente -->
+        <!-- </table>
+      </section>
+      <section id="explicacion">
+        <h4>Notas Explicativas</h4>
+        <ul>
+          <li><strong>Promedio:</strong> Un jugador con RAS con la Clase con 5, es un jugador promedio de la clase. Buscamos mayor a 5</li>
+          <li><strong>Altura:</strong> La altura del jugador en metros.</li>
+          <li><strong>Peso:</strong> El peso del jugador en kilogramos.</li>
+          <li><strong>40 YD:</strong> Tiempo que el jugador tarda en recorrer 40 yardas (segundos). Un menor tiempo es mejor.</li>
+          <li><strong>Vertical:</strong> Altura alcanzada en el salto vertical (centímetros).</li>
+          <li><strong>Broad:</strong> Distancia recorrida en el salto de longitud (centímetros).</li>
+          <li><strong>Shuttle:</strong> Tiempo que tarda en realizar un shuttle run (segundos). Un menor tiempo es mejor.</li>
+          <li><strong>3 Cone:</strong> Tiempo que tarda en completar el ejercicio 3-cone drill (segundos). Un menor tiempo es mejor.</li>
+          <li><strong>Puntaje:</strong> Calculado en una escala de 1 a 10, donde 5 indica el promedio, más de 5 es mejor que el promedio, y menos de 5 es peor.</li>
+        </ul>
+      </section> -->
+      
+
+      
+           
+      
+      <section id="notas">
+        <h3>Scouting Report</h3>
+        <textarea id="nota-texto" rows="4" placeholder="Escribe tu reporte aquí..."></textarea>
+        <br>
+        <button id="guardar-nota">Guardar Scout</button>
+        <button id="eliminar-nota">Eliminar Scout</button>
+        <p id="nota-guardada" style="color: green; display: none;">¡Nota guardada exitosamente!</p>
+    </section>
+    
+    <!-- CRM: Proceso de admisión (demo) -->
+    <section id="crm-proceso" style="margin-top: 30px;">
+      <h3>Proceso de admisión</h3>
+
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+        <div style="min-width: 220px;">
+          <label for="crm-stage" style="font-weight: bold;">Etapa</label><br>
+          <select id="crm-stage" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+            <option>Nuevo</option>
+            <option>Evaluando</option>
+            <option>Contactado</option>
+            <option>Interesado</option>
+            <option>Tryout / Visita</option>
+            <option>Oferta</option>
+            <option>Admitido</option>
+            <option>No interesado</option>
+          </select>
+        </div>
+
+        <div style="min-width: 140px;">
+          <label for="crm-priority" style="font-weight: bold;">Prioridad</label><br>
+          <select id="crm-priority" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+            <option>A</option>
+            <option selected>B</option>
+            <option>C</option>
+          </select>
+        </div>
+
+        <div style="flex: 1; min-width: 220px;">
+          <div style="font-weight: bold;">Última actualización</div>
+          <div id="crm-updated" style="color: #666;">—</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px;">
+        <div id="crm-checklist">
+          <label class="crm-check-item"><input type="checkbox" id="crm-check-contacto"> Contacto hecho</label>
+          <label class="crm-check-item"><input type="checkbox" id="crm-check-evaluado"> Jugador evaluado</label>
+          <label class="crm-check-item"><input type="checkbox" id="crm-check-academico"> Info académica verificada</label>
+          <label class="crm-check-item"><input type="checkbox" id="crm-check-combine"> Métricas / Combine cargadas</label>
+          <label class="crm-check-item"><input type="checkbox" id="crm-check-tryout"> Tryout / Visita programada</label>
+          <label class="crm-check-item"><input type="checkbox" id="crm-check-decision"> Decisión registrada</label>
+
+
+      </div>
+
+      <div style="margin-top: 18px; display: flex; gap: 16px; flex-wrap: wrap;">
+        <div style="flex: 2; min-width: 260px;">
+          <label for="crm-notes" style="font-weight: bold;">Notas del proceso</label><br>
+          <textarea id="crm-notes" rows="4" placeholder="Notas rápidas del proceso..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+        </div>
+
+        <div style="flex: 1; min-width: 220px;">
+          <label for="crm-nextstep" style="font-weight: bold;">Próximo paso</label><br>
+          <textarea id="crm-nextstep" rows="4" placeholder="Ej. Llamar martes / pedir boleta / agendar tryout..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;"></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top: 18px; display: flex; gap: 16px; flex-wrap: wrap; align-items: center;">
+        <div style="min-width: 220px;">
+          <label for="crm-decision-status" style="font-weight: bold;">Decisión</label><br>
+          <select id="crm-decision-status" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+            <option value="pendiente">Pendiente</option>
+            <option value="oferta">Oferta</option>
+            <option value="seguimiento">Seguimiento</option>
+            <option value="No interesado">No interesado</option>
+            <option value="admitido">Admitido</option>
+          </select>
+        </div>
+
+        <div style="flex: 1; min-width: 260px;">
+          <label for="crm-decision-details" style="font-weight: bold;">Detalles</label><br>
+          <input id="crm-decision-details" type="text" placeholder="Ej. Beca 30% / No elegible / Falta tryout..." style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap;">
+          <button id="crm-save" class="highlight-btn" type="button">Guardar proceso</button>
+          <button id="crm-reset" class="highlight-btn" type="button" style="background-color:#d60000;">Reset</button>
+        </div>
+      </div>
+
+      <p id="crm-msg" style="margin-top: 10px; color: green; display: none;">Guardado.</p>
+    </section>
+    
+    
+  </section>
+  
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Reclutamiento. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="proceso.js"></script>
+  <script src="perfil.js"></script>  <!-- Vincula tu archivo de JavaScript -->
+</body>
+</html>

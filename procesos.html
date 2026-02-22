@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Procesos - Tablero</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ====== Tablero Procesos (demo) ====== */
+    body{background:#f7f7f7;}
+    header{background:#8B0000;color:#fff;text-align:center;padding:16px 12px;}
+    header .topbar{max-width:1200px;margin:0 auto;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    header a{color:#fff;text-decoration:none}
+    main{max-width:1200px;margin:16px auto;padding:0 14px;}
+    .controls{
+      display:grid;
+      grid-template-columns: 1.4fr .8fr .8fr auto;
+      gap:10px;
+      align-items:end;
+      margin: 14px 0 12px;
+    }
+    .controls label{font-weight:700;display:block;margin-bottom:6px;color:#333}
+    .controls input, .controls select{
+      width:100%;
+      box-sizing:border-box;
+      padding:10px 12px;
+      border:1px solid #d6d6d6;
+      border-radius:10px;
+      background:#fff;
+    }
+    .btn{
+      border:none;cursor:pointer;font-weight:800;
+      padding:10px 14px;border-radius:10px;
+      background:#0b3d91;color:#fff;
+      white-space:nowrap;
+    }
+    .btn.secondary{background:#e9e9e9;color:#222}
+    .meta{
+      display:flex;gap:12px;flex-wrap:wrap;
+      color:#444;font-size:13px;margin:6px 0 14px;
+    }
+
+    .board{
+      display:grid;
+      grid-template-columns: repeat(8, minmax(240px, 1fr));
+      gap:12px;
+      overflow:auto;
+      padding-bottom: 8px;
+    }
+    .col{
+      background:#fff;
+      border:1px solid #e2e2e2;
+      border-radius:14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      display:flex;flex-direction:column;
+      min-height: 70vh;
+    }
+    .col-header{
+      padding:12px 12px 10px;
+      border-bottom:1px solid #eee;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .col-title{font-weight:900;color:#333;font-size:14px}
+    .col-count{
+      font-size:12px;font-weight:800;
+      padding:4px 8px;border-radius:999px;
+      background:#f1f1f1;color:#333;
+    }
+    .dropzone{
+      padding:10px;
+      display:flex;flex-direction:column;
+      gap:10px;
+      flex:1;
+    }
+    .dropzone.drag-over{
+      background: rgba(139,0,0,.04);
+      outline: 2px dashed rgba(139,0,0,.25);
+      outline-offset:-6px;
+      border-radius:12px;
+    }
+
+    .card{
+      background:#fafafa;
+      border:1px solid #e2e2e2;
+      border-radius:12px;
+      padding:10px 10px 9px;
+      cursor:grab;
+      user-select:none;
+    }
+    .card:active{cursor:grabbing;}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+    .name{font-weight:900;color:#222;font-size:14px;line-height:1.2}
+    .sub{font-size:12px;color:#555;margin-top:2px}
+    .badge{
+      font-size:11px;font-weight:900;
+      padding:4px 8px;border-radius:999px;
+      background:#eee;color:#222;
+      flex:0 0 auto;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+    .badge.A{background: rgba(11,61,145,.14); color:#0b3d91;}
+    .badge.B{background: rgba(0,0,0,.08); color:#333;}
+    .badge.C{background: rgba(139,0,0,.10); color:#8B0000;}
+    .row{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;margin-top:8px;font-size:12px;color:#444;
+    }
+    .progress{
+      height:8px;background:#e9e9e9;border-radius:999px;overflow:hidden;flex:1;
+    }
+    .progress > div{height:100%;width:0%;background:#0b3d91;}
+    .tiny{font-size:11px;color:#666;}
+    .actions{display:flex;gap:8px;margin-top:8px;}
+    .linkbtn{
+      flex:1;
+      border:1px solid #d8d8d8;
+      background:#fff;
+      padding:8px 10px;
+      border-radius:10px;
+      font-weight:800;
+      cursor:pointer;
+      font-size:12px;
+    }
+    .linkbtn:hover{background:#f4f4f4;}
+    /* Scroll horizontal arriba */
+    .top-scroll{
+      overflow-x: auto;
+      overflow-y: hidden;
+      height: 14px;              /* solo para la barrita */
+      border-radius: 10px;
+      background: transparent;
+      margin: 8px 0 10px;
+    }
+
+    .top-scroll-inner{
+      height: 1px;               /* mínimo */
+      width: 0px;                /* se actualiza por JS */
+    }
+
+    @media (max-width: 980px){
+      .controls{grid-template-columns: 1fr 1fr; }
+      .btn{grid-column: 1 / -1;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <strong style="font-size:18px">Tablero de Procesos</strong>
+        <a href="index.html">Inicio</a>
+        <a href="bigboard.html">Big Board</a>
+        <a href="roster.html">Roster</a>
+      </div>
+      <div class="tiny" id="equipo-label"></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="controls" aria-label="Controles del tablero">
+      <div>
+        <label for="search">Buscar</label>
+        <input id="search" type="text" placeholder="Nombre, escuela, estado..." />
+      </div>
+
+      <div>
+        <label for="priorityFilter">Prioridad</label>
+        <select id="priorityFilter">
+          <option value="all">Todas</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="decisionFilter">Decisión</label>
+        <select id="decisionFilter">
+          <option value="all">Todas</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="oferta">Oferta</option>
+          <option value="seguimiento">Seguimiento</option>
+          <option value="admitido">Admitido</option>
+          <option value="No interesado">No interesado</option>
+        </select>
+      </div>
+
+      <button class="btn" id="refreshBtn">Refrescar</button>
+      <button class="btn secondary" id="clearBtn" title="Limpia filtros">Limpiar filtros</button>
+    </section>
+
+    <div class="meta">
+      <div><strong id="totalCount">0</strong> jugadores en seguimiento</div>
+      <div>Arrastra tarjetas entre columnas para cambiar de etapa</div>
+      <div class="tiny">Tip: click en “Abrir perfil” para ver/editar el proceso</div>
+    </div>
+    <!-- Scroll horizontal arriba (sincronizado con el tablero) -->
+    <div id="boardTopScroll" class="top-scroll" aria-hidden="true">
+      <div id="boardTopScrollInner" class="top-scroll-inner"></div>
+    </div>
+
+    <section class="board" id="board" aria-label="Tablero por etapas">
+      <!-- Columnas se generan con JS -->
+    </section>
+  </main>
+
+  <script src="proceso.js"></script>
+  <script src="procesos.js"></script>
+</body>
+</html>
