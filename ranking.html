@@ -13,39 +13,7 @@
       text-align: center;
       color: rgb(0, 0, 0);
     }
-    header {
-      background-color: #900 !important; /* Rojo */
-      color: white; /* Letras blancas */
-      padding: 15px; /* Espaciado alrededor */
-      text-align: center; /* Centrar contenido */
-    }
-
-    header h1 {
-      color: white; /* Asegurar que el título sea blanco */
-    }
-
-    header a {
-      color: white !important; /* Forzar color blanco en enlaces */
-      text-decoration: none;
-    }
-
-    header a:hover {
-      text-decoration: underline; /* Subrayado al pasar el mouse */
-    }
-
-#cerrar-sesion {
-  background-color: white;
-  color: red;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  font-weight: bold;
-  border-radius: 5px;
-}
-
-#cerrar-sesion:hover {
-  background-color: #ffcccc; /* Color más claro al pasar el mouse */
-}
+    /* header: usa estilo global de style.css */
     h1 {
       margin-top: 20px;
     }
@@ -152,17 +120,18 @@
 <body>
 
   <header>
-    <h1>THE Rank</h1>
-    <button id="cerrar-sesion">Cerrar Sesión</button>
-    <nav style="display: flex; justify-content: space-between; align-items: center;">
-      <div style="display: flex; gap: 20px;">
-        <a href="index.html" style="color: white; text-decoration: none;">Inicio</a>
-        <a href="graficas.html" style="color: white; text-decoration: none;">Gráficas</a>
-        <a href="comparador.html" style="color: white; text-decoration: none;">Comparador</a>
-        <a href="bigboard.html" style="color: white; text-decoration: none;" >Big Board</a>
-        <a href="roster.html" style="color: white; text-decoration: none;">Roster</a>
-        <a href="ranking.html" style="color: white; text-decoration: none;">Ranking</a>
-      </div>
+    <div class="header-top">
+      <h1>Reclutamiento</h1>
+      <button id="cerrar-sesion">Cerrar sesión</button>
+    </div>
+    <nav>
+      <a href="index.html" class="nav-link">Inicio</a>
+      <a href="graficas.html" class="nav-link">Gráficas</a>
+      <a href="comparador.html" class="nav-link">Comparador</a>
+      <a href="bigboard.html" class="nav-link">Big Board</a>
+      <a href="roster.html" class="nav-link">Roster</a>
+      <a href="procesos.html" class="nav-link">Procesos</a>
+      <a href="tareas.html" class="nav-link">Tareas</a>
     </nav>
   </header>
 

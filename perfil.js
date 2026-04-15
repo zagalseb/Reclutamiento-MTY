@@ -81,10 +81,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+function resaltarEstrellas(estrellas, valor) {
+  estrellas.forEach(estrella => {
+      const valorEstrella = estrella.getAttribute("data-value");
+      estrella.style.color = valorEstrella <= valor ? "gold" : "#ccc";
+  });
+}
+
 function cargarNota(notaKey) {
   const textarea = document.getElementById("nota-texto");
-  const notaGuardada = localStorage.getItem(notaKey) || "";
-  textarea.value = notaGuardada;
+  textarea.value = localStorage.getItem(notaKey) || "";
 }
 
 function guardarNota(notaKey) {
@@ -106,46 +112,6 @@ function eliminarNota(notaKey) {
   mostrarMensaje("Nota eliminada.", "error");
 }
 
-
-function cargarCalificacion(notaKey) {
-  const estrellas = document.querySelectorAll("#estrellas .estrella");
-  const calificacionGuardada = obtenerCalificacion(notaKey);
-  actualizarEstrellas(estrellas, calificacionGuardada);
-}
-
-function guardarCalificacion(notaKey, calificacion) {
-  const username = localStorage.getItem("usuarioActual");
-  const calificacionesKey = `calificaciones_${username}`;
-  let calificaciones = JSON.parse(localStorage.getItem(calificacionesKey)) || {};
-
-  calificaciones[notaKey] = parseInt(calificacion);
-  localStorage.setItem(calificacionesKey, JSON.stringify(calificaciones));
-  alert(`¡Calificación de ${calificacion} estrellas guardada!`);
-}
-
-function obtenerCalificacion(notaKey) {
-  const username = localStorage.getItem("usuarioActual");
-  const calificacionesKey = `calificaciones_${username}`;
-  const calificaciones = JSON.parse(localStorage.getItem(calificacionesKey)) || {};
-
-  return calificaciones[notaKey] || 0;
-}
-
-
-function actualizarEstrellas(estrellas, calificacion) {
-  estrellas.forEach(estrella => {
-      const valor = estrella.getAttribute("data-value");
-      estrella.style.color = valor <= calificacion ? "gold" : "#ccc";
-  });
-}
-
-function resaltarEstrellas(estrellas, valor) {
-  estrellas.forEach(estrella => {
-      const valorEstrella = estrella.getAttribute("data-value");
-      estrella.style.color = valorEstrella <= valor ? "gold" : "#ccc";
-  });
-}
-
 function mostrarMensaje(mensaje, tipo) {
   const mensajeElemento = document.getElementById("nota-guardada");
   mensajeElemento.textContent = mensaje;
@@ -155,60 +121,6 @@ function mostrarMensaje(mensaje, tipo) {
   setTimeout(() => {
     mensajeElemento.style.display = "none";
   }, 2000);
-}
-
-
-// Función para cargar la nota desde localStorage
-function cargarNota(notaKey) {
-  const textarea = document.getElementById("nota-texto");
-  const notaGuardada = localStorage.getItem(notaKey);
-
-  if (notaGuardada) {
-      textarea.value = notaGuardada; // Mostrar la nota guardada
-  } else {
-      textarea.value = ""; // Limpiar el textarea si no hay nota
-  }
-}
-
-// Función para guardar la nota en localStorage
-function guardarNota(notaKey) {
-  const textarea = document.getElementById("nota-texto");
-  const notaTexto = textarea.value;
-
-  if (notaTexto.trim() === "") {
-      alert("La nota está vacía. Escribe algo para guardar.");
-      return;
-  }
-
-  localStorage.setItem(notaKey, notaTexto); // Guardar en localStorage
-  mostrarMensaje("¡Nota guardada exitosamente!", "success");
-}
-
-// Función para eliminar la nota de localStorage
-function eliminarNota(notaKey) {
-  const textarea = document.getElementById("nota-texto");
-
-  localStorage.removeItem(notaKey); // Eliminar de localStorage
-  textarea.value = ""; // Limpiar el textarea
-  mostrarMensaje("Nota eliminada.", "error");
-}
-
-// Función para mostrar mensajes temporales
-function mostrarMensaje(mensaje, tipo) {
-  const mensajeElemento = document.getElementById("nota-guardada");
-  mensajeElemento.textContent = mensaje;
-
-  if (tipo === "success") {
-      mensajeElemento.style.color = "green"; // Mensaje en verde
-  } else if (tipo === "error") {
-      mensajeElemento.style.color = "red"; // Mensaje en rojo
-  }
-
-  mensajeElemento.style.display = "block";
-
-  setTimeout(() => {
-      mensajeElemento.style.display = "none";
-  }, 2000); // Ocultar mensaje después de 2 segundos
 }
 
 function guardarCalificacion(notaKey, calificacion) {
@@ -233,11 +145,9 @@ function obtenerCalificacion(notaKey) {
 }
 
 
-function cargarCalificacion(calificacionKey) {
+function cargarCalificacion(notaKey) {
   const estrellas = document.querySelectorAll("#estrellas .estrella");
-  const calificacionGuardada = localStorage.getItem(calificacionKey) || 0;
-
-  actualizarEstrellas(estrellas, calificacionGuardada);
+  actualizarEstrellas(estrellas, obtenerCalificacion(notaKey));
 }
 
 function actualizarEstrellas(estrellas, calificacion) {
@@ -327,23 +237,6 @@ function normalizar(valor, rango) {
   return Math.max(0, Math.min(10, ((valor - rango.min) / (rango.max - rango.min)) * 10));
 }
 
-// Función para calcular el RAS
-function calcularRAS(jugador) {
-  const rasMetrica = {
-    Altura: normalizar(parseFloat(jugador["Altura"]), rangosRAS.altura),
-    Peso: normalizar(parseFloat(jugador["Peso"]), rangosRAS.peso),
-    "40 YD": normalizar(parseFloat(jugador["40 YD"]), rangosRAS["40 YD"]),
-    Vertical: normalizar(parseFloat(jugador["Vertical"]), rangosRAS.vertical),
-    Broad: normalizar(parseFloat(jugador["Broad"]), rangosRAS.broad),
-    Shuttle: normalizar(parseFloat(jugador["Shuttle"]), rangosRAS.shuttle),
-    "3 cone": normalizar(parseFloat(jugador["3 cone"]), rangosRAS["3 cone"]),
-  };
-
-  const rasTotal = Object.values(rasMetrica).reduce((sum, val) => sum + val, 0) / Object.keys(rasMetrica).length;
-
-  return { rasTotal, rasMetrica };
-}
-
 // Función logística para suavizar la puntuación
 function calcularLogistica(valor, rango, k = 10) {
   const xMid = (rango.max + rango.min) / 2; // Punto medio del rango
@@ -365,9 +258,9 @@ function calcularCuadratica(valor, rango) {
 function calcularRAS(jugador, metodo = "logistica") {
   // Determinar la posición válida
   const posicion =
-    jugador["Posición Ofensiva"] !== "Ninguna"
-      ? jugador["Posición Ofensiva"]
-      : jugador["Posición Defensiva"] !== "Ninguna"
+    jugador["Posición Principal"] && jugador["Posición Principal"] !== "Ninguna"
+      ? jugador["Posición Principal"]
+      : jugador["Posición Defensiva"] && jugador["Posición Defensiva"] !== "Ninguna"
       ? jugador["Posición Defensiva"]
       : null;
 
@@ -461,9 +354,9 @@ function generarTablaEstadisticas(jugador, metodo = "logistica") {
 
 // Calcular promedios por posición
 function calcularEstadisticasPorPosicion(jugadores, posicion) {
-  const jugadoresFiltrados = jugadores.filter(jugador => 
-    jugador["Posición Ofensiva"] === posicion || 
-    (jugador["Posición Ofensiva"] === "Ninguna" && jugador["Posición Defensiva"] === posicion)
+  const jugadoresFiltrados = jugadores.filter(jugador =>
+    jugador["Posición Principal"] === posicion ||
+    (!jugador["Posición Principal"] || jugador["Posición Principal"] === "Ninguna") && jugador["Posición Defensiva"] === posicion
   );
 
   const estadisticas = {
@@ -535,8 +428,8 @@ function generarTablaRASPromedio(jugador, jugadores) {
   const tabla = document.getElementById("tabla-ras-promedio");
   tabla.innerHTML = ""; // Limpiar la tabla
 
-  const posicion = jugador["Posición Ofensiva"] !== "Ninguna" 
-    ? jugador["Posición Ofensiva"] 
+  const posicion = jugador["Posición Principal"] && jugador["Posición Principal"] !== "Ninguna"
+    ? jugador["Posición Principal"]
     : jugador["Posición Defensiva"];
   const estadisticas = calcularEstadisticasPorPosicion(jugadores, posicion);
 

@@ -15,7 +15,6 @@ async function cargarArchivoTSV() {
     const tsvData = await response.text(); // Leer el archivo como texto
 
     jugadores = procesarTSV(tsvData); // Procesar el contenido TSV
-    console.log("Datos procesados del TSV:", jugadores); // Verifica los datos procesados
     mostrarResultados(jugadores); // Mostrar resultados
   } catch (error) {
     console.error("Error al cargar el archivo TSV:", error);
@@ -57,21 +56,11 @@ let filtroPesoMax = null;
 let filtroRating = "";
 let filtroFavoritos = "todos"; // Estado inicial
 let filtroEnProceso = "todos";
+let filtroNombre = "";
+let filtroOrden = "";
+let listaFiltradaActual = []; // Para exportar CSV
 let paginaActual = 1; // Página inicial
 const jugadoresPorPagina = 10; // Número de jugadores por página
-const cumpleClase =
-  filtroClase === "" || // Mostrar todos si no hay filtro
-  claseJugador === filtroClase || // Coincidencia exacta
-  (filtroClase === "all" && ["2025", "2026", "2027"].includes(claseJugador)); // Opción 'all'
-const cumpleAltura =
-  (filtroAlturaMin === null || alturaJugador >= filtroAlturaMin) &&
-  (filtroAlturaMax === null || alturaJugador <= filtroAlturaMax);
-const cumplePeso =
-  (filtroPesoMin === null || pesoJugador >= filtroPesoMin) &&
-  (filtroPesoMax === null || pesoJugador <= filtroPesoMax);
-
-
-
 
 // Filtrar jugadores por posición ofensiva
 function filtrarPorPosicionOfensiva() {
@@ -133,12 +122,9 @@ function filtrarPorEnProceso() {
 }
 
 function filtrarPorNombre() {
-  const buscador = document.getElementById("buscador-nombre").value.toLowerCase(); // Obtiene el texto del buscador
-  const jugadoresFiltrados = jugadores.filter(jugador => {
-    const nombreCompleto = `${jugador["Nombre"]} ${jugador["Apellido Paterno"]}`.toLowerCase();
-    return nombreCompleto.includes(buscador); // Filtra jugadores que contengan el texto del buscador
-  });
-  mostrarResultados(jugadoresFiltrados); // Actualiza la lista con los resultados filtrados
+  paginaActual = 1;
+  filtroNombre = document.getElementById("buscador-nombre").value.toLowerCase().trim();
+  filtrarJugadores();
 }
 
 
@@ -274,11 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
-const equipoActual = localStorage.getItem("usuarioActual");
-const claveProceso = `proceso_${equipoActual}`;
-const enProceso = JSON.parse(localStorage.getItem(claveProceso)) || [];
-
 
 // Función para alternar "En proceso"
 function toggleProceso(nombre, apellido) {
@@ -355,17 +336,11 @@ function mostrarRanking(jugadores) {
 }
 
 
-document.getElementById("cerrar-sesion").addEventListener("click", function () {
-  console.log("Botón de cerrar sesión clicado."); // Para depuración
-  localStorage.removeItem("usuario");
-  window.location.href = "login.html"; // Asegúrate de que login.html existe
-});
-
 // Combinar todos los filtros
 function filtrarJugadores() {
   const equipoActual = localStorage.getItem("usuarioActual"); // Identificar el equipo actual
   const claveFavoritos = `favoritos_${equipoActual}`; // Clave específica para favoritos
-  const claveEnProceso = `enProceso_${equipoActual}`; // Clave específica para "En Proceso"
+  const claveEnProceso = `proceso_${equipoActual}`; // Clave específica para "En Proceso"
   
   const favoritos = JSON.parse(localStorage.getItem(claveFavoritos)) || []; // Obtener favoritos
   const enProceso = JSON.parse(localStorage.getItem(claveEnProceso)) || []; // Obtener "En Proceso"
@@ -403,19 +378,143 @@ function filtrarJugadores() {
       filtroFavoritos === "todos" || // Mostrar todos
       (filtroFavoritos === "favoritos" && favoritos.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
 
-      const cumpleEnProceso =
-      filtroEnProceso === "todos" || // Mostrar todos los jugadores
+    const cumpleEnProceso =
+      filtroEnProceso === "todos" ||
       (filtroEnProceso === "enProceso" && enProceso.includes(`${jugador["Nombre"]}_${jugador["Apellido Paterno"]}`));
-    
-    
 
-    return cumpleOfensiva && cumpleDefensiva && cumpleClase && cumpleEstado && cumpleAltura && cumplePeso && cumpleRating && cumpleFavoritos && cumpleEnProceso;
+    const cumpleNombre =
+      filtroNombre === "" ||
+      `${jugador["Nombre"]} ${jugador["Apellido Paterno"]}`.toLowerCase().includes(filtroNombre);
+
+    return cumpleOfensiva && cumpleDefensiva && cumpleClase && cumpleEstado && cumpleAltura && cumplePeso && cumpleRating && cumpleFavoritos && cumpleEnProceso && cumpleNombre;
   });
 
-  mostrarResultados(jugadoresFiltrados);
+  const jugadoresOrdenados = aplicarOrden(jugadoresFiltrados);
+  listaFiltradaActual = jugadoresOrdenados;
+  mostrarResultados(jugadoresOrdenados);
 }
 
 
+
+// Ordenar lista según criterio seleccionado
+function aplicarOrden(lista) {
+  const orden = document.getElementById("ordenarFiltro")?.value || "";
+  if (!orden) return lista;
+  const copia = [...lista];
+  const nombreCompleto = j => `${j["Nombre"]} ${j["Apellido Paterno"]}`;
+  switch (orden) {
+    case "nombre-az":
+      return copia.sort((a, b) => nombreCompleto(a).localeCompare(nombreCompleto(b)));
+    case "nombre-za":
+      return copia.sort((a, b) => nombreCompleto(b).localeCompare(nombreCompleto(a)));
+    case "altura-desc":
+      return copia.sort((a, b) => (parseFloat(b["Altura"]) || 0) - (parseFloat(a["Altura"]) || 0));
+    case "altura-asc":
+      return copia.sort((a, b) => (parseFloat(a["Altura"]) || 0) - (parseFloat(b["Altura"]) || 0));
+    case "rating-desc":
+      return copia.sort((a, b) => (parseFloat(b["Rating"]) || 0) - (parseFloat(a["Rating"]) || 0));
+    case "clase-asc":
+      return copia.sort((a, b) => (a["Clase (Año de graduación)"] || "").localeCompare(b["Clase (Año de graduación)"] || ""));
+    default:
+      return lista;
+  }
+}
+
+function ordenarResultados() {
+  paginaActual = 1;
+  filtrarJugadores();
+}
+
+// Resetear todos los filtros a estado inicial
+function resetearFiltros() {
+  filtroPosicionOfensiva = "";
+  filtroPosicionDefensiva = "";
+  filtroClase = "";
+  filtroEstado = "";
+  filtroAlturaMin = null;
+  filtroAlturaMax = null;
+  filtroPesoMin = null;
+  filtroPesoMax = null;
+  filtroRating = "";
+  filtroFavoritos = "todos";
+  filtroEnProceso = "todos";
+  filtroNombre = "";
+  filtroOrden = "";
+  paginaActual = 1;
+
+  document.getElementById("posicionOfensivaFiltro").value = "";
+  document.getElementById("claseFiltro").value = "";
+  document.getElementById("favoritosFiltro").value = "todos";
+  document.getElementById("estadoFiltro").value = "Todos";
+  document.getElementById("alturaMinFiltro").value = "";
+  document.getElementById("alturaMaxFiltro").value = "";
+  document.getElementById("buscador-nombre").value = "";
+  const ordenEl = document.getElementById("ordenarFiltro");
+  if (ordenEl) ordenEl.value = "";
+
+  filtrarJugadores();
+}
+
+// Actualizar barra de estadísticas
+function actualizarStatsBar(lista) {
+  const equipoActual = localStorage.getItem("usuarioActual");
+  const favoritosGuardados = JSON.parse(localStorage.getItem(`favoritos_${equipoActual}`)) || [];
+  const enProcesoGuardados = JSON.parse(localStorage.getItem(`proceso_${equipoActual}`)) || [];
+
+  const totalFav = lista.filter(j =>
+    favoritosGuardados.includes(`${j["Nombre"]}_${j["Apellido Paterno"]}`)
+  ).length;
+  const totalEnProceso = lista.filter(j =>
+    enProcesoGuardados.includes(`${j["Nombre"]}_${j["Apellido Paterno"]}`)
+  ).length;
+
+  const statTotal = document.getElementById("stat-total");
+  const statFav = document.getElementById("stat-favoritos");
+  const statProceso = document.getElementById("stat-proceso");
+  if (statTotal) statTotal.textContent = `${lista.length} prospectos`;
+  if (statFav) statFav.textContent = `★ ${totalFav} favoritos`;
+  if (statProceso) statProceso.textContent = `⚡ ${totalEnProceso} en proceso`;
+}
+
+// Exportar lista filtrada actual como CSV
+function exportarCSV() {
+  if (!listaFiltradaActual || listaFiltradaActual.length === 0) {
+    alert("No hay jugadores en la lista para exportar.");
+    return;
+  }
+
+  const equipoActual = localStorage.getItem("usuarioActual") || "equipo";
+  const calificaciones = JSON.parse(localStorage.getItem(`calificaciones_${equipoActual}`)) || {};
+  const favoritosGuardados = JSON.parse(localStorage.getItem(`favoritos_${equipoActual}`)) || [];
+
+  const columnas = [
+    "Nombre", "Apellido Paterno", "Posición Principal", "Posición Defensiva",
+    "Clase (Año de graduación)", "Estado", "Altura", "Peso en Kgs",
+    "40 YD", "Vertical", "Broad", "Shuttle", "3 cone", "Rating",
+    "Teléfono personal", "Correo Electrónico"
+  ];
+
+  const filas = listaFiltradaActual.map(j => {
+    const notaKey = `${equipoActual}_${j["Nombre"]}_${j["Apellido Paterno"]}`;
+    const calificacion = calificaciones[notaKey] || 0;
+    const esFavorito = favoritosGuardados.includes(`${j["Nombre"]}_${j["Apellido Paterno"]}`);
+    const valores = columnas.map(col => `"${(j[col] || "").toString().replace(/"/g, '""')}"`);
+    valores.push(`"${calificacion}"`);
+    valores.push(`"${esFavorito ? "Sí" : "No"}"`);
+    return valores.join(",");
+  });
+
+  const encabezados = [...columnas, "Calificación (estrellas)", "Favorito"].map(c => `"${c}"`).join(",");
+  const csv = "\uFEFF" + [encabezados, ...filas].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `prospectos_${equipoActual}_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
 // Obtener el usuario actual del almacenamiento local
 const usuarioActual = localStorage.getItem("usuarioActual");
@@ -431,6 +530,8 @@ if (usuarioActual) {
 
 // Mostrar resultados en la interfaz
 function mostrarResultados(lista) {
+  actualizarStatsBar(lista);
+
   const resultados = document.getElementById("resultados");
   resultados.innerHTML = "";
 
@@ -494,14 +595,6 @@ function mostrarResultados(lista) {
     botonFavorito.setAttribute("data-apellido", jugador["Apellido Paterno"]);
     botonFavorito.onclick = () => toggleFavoritoGlobal(jugador["Nombre"], jugador["Apellido Paterno"]);
     li.appendChild(botonFavorito);
-
-    // Botón de "En Proceso"
-    // const botonProceso = document.createElement("button");
-    // botonProceso.className = "proceso-btn";
-    // botonProceso.setAttribute("data-nombre", jugador["Nombre"]);
-    // botonProceso.setAttribute("data-apellido", jugador["Apellido Paterno"]);
-    // botonProceso.onclick = () => toggleProceso(jugador["Nombre"], jugador["Apellido Paterno"]);
-    // li.appendChild(botonProceso);
 
     resultados.appendChild(li);
 

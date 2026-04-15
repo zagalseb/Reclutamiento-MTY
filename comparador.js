@@ -58,7 +58,7 @@ function generarListaJugadores() {
   // Actualizar jugadoresFiltrados según los filtros seleccionados
   jugadoresFiltrados = jugadores.filter(jugador => {
     const coincideEstado = filtroEstado === "Todos" || jugador["Estado"] === filtroEstado;
-    const coincidePosicionOFF = filtroOfensiva === "" || jugador["Posición Ofensiva"] === filtroOfensiva;
+    const coincidePosicionOFF = filtroOfensiva === "" || jugador["Posición Principal"] === filtroOfensiva;
     const coincidePosicionDEF = filtroDefensiva === "" || jugador["Posición Defensiva"] === filtroDefensiva;
     return coincideEstado && coincidePosicionOFF && coincidePosicionDEF;
   });
@@ -285,13 +285,6 @@ function generarGraficoComparativo(jugador1, jugador2) {
     }
   });
 }
-
-// Cargar datos al iniciar
-document.addEventListener("DOMContentLoaded", () => {
-  cargarJugadores(); // Esta función ya está definida en tu archivo `comparador.js`
-});
-
-
 
 
 

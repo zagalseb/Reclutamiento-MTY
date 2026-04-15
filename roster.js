@@ -206,6 +206,7 @@ function mostrarComparacion(prospecto, roster) {
   // Generar tabla de comparación
   function generarTablaComparacion(prospecto, jugadores, titulo) {
     const contenedor = document.createElement("div");
+    const encabezado = document.createElement("h3");
     encabezado.textContent = titulo;
     contenedor.appendChild(encabezado);
 
@@ -260,7 +261,7 @@ function mostrarComparacion(prospecto, roster) {
 
     const jugadoresFiltrados = prospectos.filter(jugador => {
       const coincideEstado = estadoSeleccionado === "Todos" || jugador["Estado"] === estadoSeleccionado;
-      const coincidePosicionOFF = !posicionOfensiva || jugador["Posición Ofensiva"] === posicionOfensiva;
+      const coincidePosicionOFF = !posicionOfensiva || jugador["Posición Principal"] === posicionOfensiva;
       const coincidePosicionDEF = !posicionDefensiva || jugador["Posición Defensiva"] === posicionDefensiva;
       return coincideEstado && coincidePosicionOFF && coincidePosicionDEF;
     });
